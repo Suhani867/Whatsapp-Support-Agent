@@ -30,7 +30,7 @@ An intelligent, automated WhatsApp chatbot built with Django and Meta's official
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/whatsapp-support-agent.git
+git clone https://github.com/Suhani867/Whatsapp-Support-Agent.git
 cd whatsapp-support-agent
 ```
 
@@ -137,5 +137,5 @@ MIT License
 
 ## 👤 Author
 
-- [Your Name](https://github.com/yourusername)
+- [Suhani Bansal](https://github.com/Suhani867)
 - Built with ❤️ using Python and Django

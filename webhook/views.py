@@ -1,13 +1,14 @@
 import json
 from django.shortcuts import render
 from rest_framework.viewsets import GenericViewSet
-from webhook.models import WebhookLog
+from webhook.models import WebhookLog,MessageTemplate
 from webhook.serializers import WebHookLogModelSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from webhook.helpers import WhatsappMessageHelper, WhatsappWebhookHelper
+
 # Create your views here.
 class WhatsappWebhookViewSet(GenericViewSet):
     model = WebhookLog
@@ -52,7 +53,7 @@ class WhatsappWebhookViewSet(GenericViewSet):
                 contact = contacts[0]
                 wa_id = contact.get('wa_id', '')
                 name = contact.get('profile', {}).get('name', '')
-                print(wa_id, name)
+               
         
                 messages = value.get('messages', [])
                 message = messages[0]
@@ -62,12 +63,26 @@ class WhatsappWebhookViewSet(GenericViewSet):
 
                 responseHelper = WhatsappWebhookHelper()
                 response_message= responseHelper.get_message_response(body)
+                response_type= response_message.pop('response_type',None)
+               
 
                 helper = WhatsappMessageHelper()
-                response = helper.send_text_message(wa_id,response_message)
+                if response_type == MessageTemplate.ResponseTypeChoices.TEXT:
+                    responsem = helper.send_text_message(wa_id, **response_message)
+
+                if response_type == MessageTemplate.ResponseTypeChoices.TEMPLATE:
+                    response = helper.send_template_message(wa_id, **response_message)
+                    print(response)
+                
+                if response_type == MessageTemplate.ResponseTypeChoices.FLOW:
+                    response = helper.send_flow_message(wa_id, **response_message)
+               # response = helper.send_text_message(wa_id,response_message)
                 log_instance.response = response
                 log_instance.save()
             except:
                 pass
 
             return Response('Webhook received' , status=status.HTTP_200_OK)
+
+                
+

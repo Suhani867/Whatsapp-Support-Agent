@@ -8,6 +8,8 @@ class TemplateTextMessage(models.Model):
     template_name = models.CharField( max_length=255)
 
 class FlowTextMessage(models.Model):
+
+    flow_id = models.TextField(null=True, blank=True)
     header_text=models.TextField()
     body_text=models.TextField()
     footer_text=models.TextField(null = True, blank = True)

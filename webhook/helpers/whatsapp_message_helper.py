@@ -24,8 +24,8 @@ class WhatsappMessageHelper:
     def send_request(self, data):
         
         url = f"{self.base_url}/messages"   
-        print(url)
-        print(self.headers)
+      
+       
         response = requests.post(
             url,
             headers=self.headers,
@@ -33,6 +33,7 @@ class WhatsappMessageHelper:
         )
 
         if response.status_code == 200:
+            print("Message_sent")
             return response.json()
         else:
             print(response.text)
@@ -46,7 +47,7 @@ class WhatsappMessageHelper:
             "text": {
                 "body": text
             }}
-        print(data)
+        
         return self.send_request(data)
         
 
@@ -57,48 +58,59 @@ class WhatsappMessageHelper:
             "to": number,
             "type": "template",
             "template": {
-                "name": template["name"],
-                "language": {
-                    "code": template["language"]
+                "name": template,
+                "language": {"code": "en"
+                    
                 },
             
             }
 
         }
-        if template["component"]:
+        #  if template["component"]:
             
-            data['template']["components"]= [
-                    {
-                        "type": "body",
-                        "parameters": [
-                            {"type": "text", "text": param} for param in template["parameters"]
-                        ]
-                    }
-                ]
-        print(data)
+        #     data['template']["components"]= [
+        #             {
+        #                 "type": "body",
+        #                 "parameters": [
+        #                     {"type": "text", "text": param} for param in template["parameters"]
+        #                 ]
+        #             }
+        #         ]
+       
         return self.send_request(data) 
 
 
-    def send_flow_message(self, number, flow_message_id, flow_name="your_flow_name", language_code="en_US"):
+    def send_flow_message(self, number, header_text, body_text, footer_text, flow_id, flow_cta):
         data = {
             "messaging_product": "whatsapp",
             "to": number,
             "type": "interactive",
             "interactive": {
                 "type": "flow",
+                "header": {
+                "type": "text",
+                "text": header_text
+                },
                 "body": {
-                    "text": "Please complete the form below."  # Optional
+                "text": body_text
                 },
-                "flow": {
-                    "name": flow_name,
-                    "language": {
-                        "code": language_code
+                "footer": {
+                "text": footer_text
                 },
-                "flow_message_id": flow_message_id
+                "action": {
+                    "name": "flow",
+                    "parameters": {
+                        "flow_message_version": "3",
+                        "flow_id": flow_id,
+                        "flow_cta": flow_cta,
+                        "mode": "draft"
+                        
+                    }
                 }
             }
         }
-        print(data)
+        
+        
         return self.send_request(data)  # Uncomment this if you want to send the message
 
     
